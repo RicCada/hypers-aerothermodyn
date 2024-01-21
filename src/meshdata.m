@@ -41,7 +41,7 @@ function vehicle = meshdata(vehicleInit)
     vehicle.normal = normVec;
     vehicle.vertex = vertex; 
     vehicle.areaTotal = sum(vehicle.area); 
-
+    vehicle.nPanel = nPanel; 
 
 end
 

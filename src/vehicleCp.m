@@ -4,13 +4,13 @@ function cpVec = vehicleCp(mach, fsdir, normalVec, gamma)
 %
 %   INPUT
 %       mach,      double[1, 1]: free stream mach number [-]
-%       fsdir,     double[3, 1]: free stream direction in body reference frame [-]
-%       normalVec, double[3, n]: unit vector normal to each panel
+%       fsdir,     double[3, 1]: free stream direction in body reference frame - unit vector [-]
+%       normalVec, double[3, n]: normal to each panel - unit vector
 %       gamma,     double[1, 1]: specif heat constant [-]
 %   OUTPUT:     
 %       cpVec,     double[n, 3]: pressure coefficient of each panel
 
-nPanel = size(normalVec, 1); 
+nPanel = size(normalVec, 2); 
 cpVec = zeros(nPanel, 1); 
 
 for i = 1:nPanel
@@ -20,7 +20,7 @@ for i = 1:nPanel
     dotProd = dot(normal, fsdir); 
 
     if dotProd < 0  % the panel is hit by the free stream
-        theta = acos(dotProd/norm(dotProd)) - pi/2;  % inclination angle: free stream wrt panel
+        theta = acos(dotProd) - pi/2;  % inclination angle: free stream wrt panel
         cpVec(i) = panlcp(theta, mach, gamma);   % compute the CP
     end
 
