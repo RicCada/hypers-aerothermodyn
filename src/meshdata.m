@@ -1,8 +1,11 @@
-function vehicle = meshdata(vehicleInit)
+function vehicle = meshdata(vechileInit)
     
+    vehicleMesh = vechileInit.mesh; 
+    data = vechileInit.data; 
+
     %%% Initialization
     vehicle = struct; 
-    nPanel = size(vehicleInit.ConnectivityList, 1); % panel number
+    nPanel = size(vehicleMesh.ConnectivityList, 1); % panel number
     
     areaVec = zeros(nPanel,1); 
     vertex = zeros(nPanel, 3, 3); % vertex of each panel
@@ -12,7 +15,7 @@ function vehicle = meshdata(vehicleInit)
     for i = 1:nPanel
         
         % extract the points composing the i-th triangle
-        pts = vehicleInit.Points(vehicleInit.ConnectivityList(i, :), :); 
+        pts = vehicleMesh.Points(vehicleMesh.ConnectivityList(i, :), :); 
         p1 = pts(1, :); 
         p2 = pts(2, :); 
         p3 = pts(3, :); 
@@ -34,7 +37,7 @@ function vehicle = meshdata(vehicleInit)
      
     end
     
-    normVec = faceNormal(vehicleInit);  % normal vector to each panel
+    normVec = faceNormal(vehicleMesh);  % normal vector to each panel
     
     vehicle.center = center; 
     vehicle.area = areaVec; 
@@ -42,6 +45,9 @@ function vehicle = meshdata(vehicleInit)
     vehicle.vertex = vertex; 
     vehicle.areaTotal = sum(vehicle.area); 
     vehicle.nPanel = nPanel; 
+    vehicle.SRef = data.SRef; 
+    vehicle.LRef = data.LRef; 
+    vehicle.CG = data.CG + data.LRef/2*[0 1 1]'; 
 
 end
 
