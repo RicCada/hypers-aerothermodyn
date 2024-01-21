@@ -1,13 +1,15 @@
 function data = configHypers()
-    
+    KM = 1000; 
+
+
     % Select vehicle
-    data.vehicle = 'SoyuzCapsule.stl'; 
+    data.vehicleName = 'ApolloCapsule'; 
 
 
     % Select flight conditionss
-    data.fltcon.alpha = 0; 
-    data.fltcon.mach = 6; 
-    data.fltcon.alt = 10000; 
+    data.fltcon.alpha = (20) *pi/180; 
+    data.fltcon.mach = (6); 
+    data.fltcon.alt = [60] .* KM; 
     
     data.fltcon.gamma = 1.4;
 
