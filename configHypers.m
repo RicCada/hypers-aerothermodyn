@@ -5,12 +5,14 @@ function data = configHypers()
     % Select vehicle
     data.vehicleName = 'ApolloCapsule'; 
 
-
     % Select flight conditionss
-    data.fltcon.alpha = (20) *pi/180; 
-    data.fltcon.mach = (6); 
-    data.fltcon.alt = [60] .* KM; 
+    data.fltcon.alpha = (30) *pi/180; 
+    data.fltcon.mach = (10); 
+    data.fltcon.alt = [80] .* KM; 
     
     data.fltcon.gamma = 1.4;
 
+    % Set solver options
+    data.common.optFsolve = optimoptions('fsolve','Display','off'); 
+    
 end
