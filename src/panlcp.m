@@ -6,7 +6,7 @@ function CP = panlcp(theta, M, gamma)
 %   INPUT: 
 %       theta,  double[1, 1]: inglination angle between panel and free stream [deg]
 %       M,      double[1, 1]: free stream mach number [-]
-%       gamma,  double[1, 1]: specif heat constant [-]
+%       gamma,  double[1, 1]: specif heat ratio [-]
 %   OUTPUT:     
 %       CP,     double[1, 1]: pressure coefficient [-]
 
