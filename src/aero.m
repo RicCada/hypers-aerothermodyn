@@ -58,7 +58,7 @@ for iA = 1:nAlp                 % loop on angle of attack
         mach = machVec(iM);     % [-] Mach number
 
         fsDir = [-cos(alpha), 0, sin(alpha)];         % free stream direction
-        cpIt = vehicleCp(mach, fsDir, normVec, gamma); % [-] cp of each panel in the given conf
+        cpIt = newtonMod(mach, fsDir, normVec, gamma); % [-] cp of each panel in the given conf
         
         indComp = cpIt ~= 0;            % save index of nonzero elements
 

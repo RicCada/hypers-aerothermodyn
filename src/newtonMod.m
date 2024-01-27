@@ -1,6 +1,7 @@
-function cpVec = vehicleCp(mach, fsdir, normalVec, gamma)
+function cpVec = newtonMod(mach, fsdir, normalVec, gamma)
 %   cpVec = vehicleCp(mach, fsdir, vehicleData)
-%   funcition to compute the pressure coefficient of each panel in vehicleData
+%   funcition to compute the pressure coefficient of each panel in
+%   vehicleData with the Modified Newton method
 %
 %   INPUT
 %       mach,      double[1, 1]: free stream mach number [-]
