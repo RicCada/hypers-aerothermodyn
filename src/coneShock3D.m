@@ -17,7 +17,7 @@ function [] = coneShock3D(theta, M1, c1, gamma, Rg, common)
     toll = 1e-3; 
 
     % suppose initial beta
-    beta0 = pi/2 - eps;  % shockwave angle [rad]
+    beta0 = pi/4;  % shockwave angle [rad]
 
     T1 =  c1^2/(Rg * gamma);    % pre shock static temperature
     funBeta = @(x) computeBeta(x, theta, M1, T1, gamma, Rg, common.optOde);
@@ -26,14 +26,13 @@ function [] = coneShock3D(theta, M1, c1, gamma, Rg, common)
 end
 
 
-function dY = odeVelocityCone(th, Y, gamma, thetaC, h02)
+function dY = odeVelocityCone(th, Y, gamma, h02)
     %   dY = odeVelocityCone(theta, Y), function to evaluate the profile speed at each    
     %   angular coordinate theta
     %   
     %   INPUT:  
     %       th,     double[1, 1]: tangential angular coordinate [rad]
     %       Y,      double[2, 1]: state vector: vr, vtheta
-    %       thetaC, double[1, 1]: cone semi apex angle [rad]
     %       h02,    double[1, 1]: post shock total entalpy [J]
     %   OUTPUT:
     %       dY,     double[2, 1]: state derivatives
@@ -48,7 +47,7 @@ function dY = odeVelocityCone(th, Y, gamma, thetaC, h02)
 
     % compute velocity derivatives
     duR = uTh; 
-    duTh = -uR + c^2 * (uR + uTh * cot(thetaC))/(uTh^2 - c^2); 
+    duTh = -uR + c^2 * (uR + uTh * cot(th))/(uTh^2 - c^2); 
 
     dY = [duR; duTh]; 
 
@@ -81,5 +80,5 @@ function res = computeBeta(beta, thetaC, M1, T1, gamma, Rg, optOde)
 
         [~, uVec] = ode113(@odeVelocityCone, [beta, thetaC], [ur2; uth2], optOde, gamma, thetaC, h02); 
         
-        res = uVec(end, 2); 
+        res = uVec(end, 2) ;
 end
