@@ -1,0 +1,97 @@
+function [outputArg1,outputArg2] = checkVisibility(vehicleData, dir)
+    
+    nPanel = vehicleData.nPanel; 
+    
+    id = 1; 
+    indexVis = true(1, nPanel); 
+    while id <= nPanel
+            
+        % consider the beginning of the line as the center of the panel
+        l0 = vehicleData.center(id, :)';   
+
+        for i = 1:nPanel
+            
+            % for each of the other panels check if they are hit by the
+            % line
+            p0 = vehicleData.center(i, :)';  
+            normal = vehicleData.normal(i, :)'; 
+
+            if dot(dir, normal) ~= 0  % consider only the cases not parallel to the line
+    
+                dist = dot((p0 - l0), normal)/dot(dir, normal); 
+                Pint = l0 + dir * dist; % intersection point between the line and the plane
+                
+
+                innerFlag = isInner(Pint, vehicleData.vertex(i, :, :));
+    
+                if innerFlag
+                    % if the panel is hit by the line is not visibile, than
+                    % the first on the line will be considered back visible
+                    indexVis(i) = false; 
+                end
+            end
+
+        end
+        
+        % find the first panel along the considered line
+        centerPos = vehicleData.center(not(indexVis), :)'; 
+        xCenter = centerPos(1, :); 
+        [~, iMin] = min(xCenter); 
+        falseInd = find(~indexVis); 
+        indexVis(falseInd(iMin)) = true; % set as visible the first element
+
+
+        % remove non visible panels
+        vehicleData.center = vehicleData.center(indexVis, :); 
+        vehicleData.area = vehicleData.area(indexVis, :); 
+        vehicleData.normal = vehicleData.normal(indexVis, :); 
+        vehicleData.vertex = vehicleData.vertex(indexVis, :, :); 
+        
+        % update the number of panels still to be evaluated 
+        nPanel = sum(indexVis); 
+        
+        id = id + 1; 
+    end
+
+end
+
+
+%% TEST TRIANGLE INNER
+close; clc ;
+
+
+A = [1, 0.8]; 
+B = [0, 2]; 
+C = [0.2, 0]; 
+
+P = [0.2, 1.3]; 
+
+xpts = [A(1), B(1), C(1), A(1)]; 
+ypts = [A(2), B(2), C(2), A(2)]; 
+
+Cx = (A + B + C)/3;
+
+% compute the direction vector from the center to a given side
+[dirAB, distAB] = sideNormalDirection(Cx, A, B);
+[dirBC, distBC] = sideNormalDirection(Cx, B, C); 
+[dirAC, distAC] = sideNormalDirection(Cx, A, C); 
+
+% compute projections
+prjAB = dot(dirAB, P - Cx); 
+prjBC = dot(dirBC, P - Cx); 
+prjAC = dot(dirAC, P - Cx); 
+
+if prjAB < distAB && prjBC < distBC && prjAC < distAC
+    disp('Inner'); 
+else
+    disp('Outer'); 
+end
+
+
+
+figure; hold on
+
+plot(xpts,  ypts, '-o'); 
+plot(Cx(1), Cx(2), 'o'); 
+plot(P(1), P(2), 'x'); 
+
