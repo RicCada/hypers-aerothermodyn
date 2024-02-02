@@ -47,7 +47,7 @@ function vehicle = meshdata(vechileInit)
     vehicle.nPanel = nPanel; 
     vehicle.SRef = data.SRef; 
     vehicle.LRef = data.LRef; 
-    vehicle.CG = data.CG + data.LRef/2*[0 1 1]'; 
+    vehicle.CG = data.CG;  %+ data.LRef/2*[0 1 1]'; 
 
 end
 

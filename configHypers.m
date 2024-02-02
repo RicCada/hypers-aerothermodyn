@@ -3,12 +3,12 @@ function data = configHypers()
 
 
     % Select vehicle
-    data.vehicleName = 'ApolloCapsule'; 
+    data.vehicleName = 'STS'; 
 
     % Select flight conditionss
-    data.fltcon.alpha = (30) *pi/180; 
-    data.fltcon.mach = (10); 
-    data.fltcon.alt = [80] .* KM; 
+    data.fltcon.alpha = (0:5:45) *pi/180; 
+    data.fltcon.mach = (18); 
+    data.fltcon.alt = [61] .* KM; 
     
     data.fltcon.gamma = 1.4;
 
