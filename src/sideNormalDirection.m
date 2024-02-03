@@ -7,9 +7,9 @@ function [dir, dist] = sideNormalDirection(Cx, A, B)
     vAB = A - B; 
     if vAB(1) ~= 0 
         u = - vAB(2)/vAB(1); 
-        dir = [u, 1]; 
+        dir = [u; 1]; 
     else
-        dir = [1, 0]; 
+        dir = [1; 0]; 
     end
 
     dir = dir/norm(dir); 
