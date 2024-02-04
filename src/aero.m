@@ -1,4 +1,4 @@
-function [F, M, CpMat, L, D] = aero(vehicleData,fltcon)
+function [F, M, CpMat, LD, coeffs] = aero(vehicleData,fltcon)
 %   [F, M, CpMat] = aero(vehicleData,fltcon)
 %   computes the aerodynamic forces in hypersonic regime
 %
@@ -20,6 +20,8 @@ function [F, M, CpMat, L, D] = aero(vehicleData,fltcon)
 %       F,              double[3, nAlp, nMach, nAlt]: forces on x, y, z body [N]
 %       M,              double[3, nAlp, nMach, nAlt]: moments on x,y, z body wrt the origin [Nm]
 %       CpMat,          double[n, nAlp, nMach]: CP of each panel
+%       LD,             double[2, nAlp, nMach]: Lift and Drag [N]
+%       coeffs,         double[6, nAlp, nMach]: Coefficients [CA, CY, CN, Cl, Cm, Cn]
 
 %%% preallocation
 nPanel = vehicleData.nPanel; 
@@ -47,11 +49,10 @@ gamma = fltcon.gamma;
 
 % output data
 F = zeros(3, nAlp, nMach, nAlt);
-L = zeros(1, nAlp, nMach, nAlt);
-D = zeros(1, nAlp, nMach, nAlt);
+LD = zeros(2, nAlp, nMach, nAlt);
 M = zeros(3, nAlp, nMach, nAlt); 
 CpMat = zeros(nPanel, nAlp, nMach); 
-
+coeffs = zeros(6, nAlp, nMach, nAlt); 
 
 %%% loop on flight conditions
 for iA = 1:nAlp                 % loop on angle of attack
@@ -73,8 +74,10 @@ for iA = 1:nAlp                 % loop on angle of attack
         F(:, iA, iM, :) = 0.5 .* rho .* v.^2 .* SRef .* CF;
         M(:, iA, iM, :) = 0.5 .* rho .* v.^2 .* SRef .* lRef .* CM; 
         CpMat(:, iA, iM) = cpIt; 
-        L(1, iA, iM, :) = -F(1, iA, iM, :)*sin(alpha) + F(3, iA, iM, :)*cos(alpha);
-        D(1, iA, iM, :) = -F(1, iA, iM, :)*cos(alpha) + F(3, iA, iM, :)*sin(alpha);
+        LD(1, iA, iM, :) = -F(1, iA, iM, :).*sin(alpha) + F(3, iA, iM, :).*cos(alpha);
+        LD(2, iA, iM, :) = -F(1, iA, iM, :).*cos(alpha) + F(3, iA, iM, :).*sin(alpha);
+        coeffs(1:3, iA, iM, :) = CF; 
+        coeffs(4:6, iA, iM, :) = CM; 
     end
 end
 
