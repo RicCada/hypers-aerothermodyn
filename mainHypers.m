@@ -23,16 +23,13 @@ data = configHypers;
 vehicle = readin(data.vehicleName);
 vehicleData = meshdata(vehicle); 
 
-[F, M, CpMat, L, D] = aero(vehicleData, data.fltcon);
-
-delcel = D/vehicle.data.mass
-
+[F, M, CpMat, LD, coeffs] = aero(vehicleData, data.fltcon);
+delcel = LD(2, :)./vehicle.data.mass
 
 iAlp = 1; 
 iMach = 1; 
 
 printCP(vehicle.mesh, CpMat(:, iAlp, iMach), vehicleData.CG, iAlp, iMach, data.fltcon); 
-
 
 wing = wingDesign;
 
