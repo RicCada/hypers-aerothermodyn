@@ -13,5 +13,7 @@ vehicle.data.LRef = data(2);
 vehicle.data.CG = data(3:5);
 vehicle.data.mass = data(6);
 
+fclose(fID); 
+
 end
 
