@@ -3,7 +3,7 @@ function data = configHypers()
     RE = 6.3781e6; 
 
     % Select vehicle
-    data.vehicleName = 'Plug'; 
+    data.vehicleName = 'ApolloCapsule'; 
 
     % Select flight conditionss
     data.fltcon.alpha = (-180:5:180) *pi/180; 
