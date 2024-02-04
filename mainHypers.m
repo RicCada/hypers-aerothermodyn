@@ -16,17 +16,29 @@ clear;
 close all; 
 
 addpath(genpath('src\')); 
+addpath(genpath('data\'));
 
 data = configHypers; 
 
 vehicle = readin(data.vehicleName);
 vehicleData = meshdata(vehicle); 
 
-[F, M, CpMat] = aero(vehicleData, data.fltcon); 
+[F, M, CpMat, L, D] = aero(vehicleData, data.fltcon);
+
+delcel = D/vehicle.data.mass
+
 
 iAlp = 1; 
 iMach = 1; 
 
 printCP(vehicle.mesh, CpMat(:, iAlp, iMach), vehicleData.CG, iAlp, iMach, data.fltcon); 
+
+
+wing = wingDesign;
+
+[CL, CD] = profile2D(wing, wing.solver);
+
+
+
 
 

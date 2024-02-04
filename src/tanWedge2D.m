@@ -30,7 +30,7 @@ function cpVec = tanWedge2D(M1, p1, alpha, xx, yy, gamma, common)
         beta = 0.01;                                                        % first beta guess
         for n = 1:npts
             
-            if theta > 0 % if segment is exposed to free stream
+            if theta(n) > 0 % if segment is exposed to free stream
                 funBeta = @(x) obliqueShockAngle(x, M1, gamma) - theta(n);
                 [beta, ~, iexit] = fsolve(funBeta, beta, common.optFsolve); % compute the shockwave angle
                 

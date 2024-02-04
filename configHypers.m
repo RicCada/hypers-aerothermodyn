@@ -3,13 +3,14 @@ function data = configHypers()
 
 
     % Select vehicle
-    data.vehicleName = 'STS'; 
+    data.vehicleName = 'ApolloCapsule'; 
 
     % Select flight conditionss
-    data.fltcon.alpha = (0:5:45) *pi/180; 
-    data.fltcon.mach = (18); 
-    data.fltcon.alt = [61] .* KM; 
-    
+    data.fltcon.alpha = (26.1) *pi/180; 
+    data.fltcon.alt = [75] .* KM; 
+    [~,vSon,~,~] = atmoscoesa(data.fltcon.alt);
+    data.fltcon.mach = (9600/vSon);
+
     data.fltcon.gamma = 1.4;
 
     % Set solver options

@@ -11,6 +11,7 @@ data = fscanf(fID, '%f');
 vehicle.data.SRef = data(1);
 vehicle.data.LRef = data(2);
 vehicle.data.CG = data(3:5);
+vehicle.data.mass = data(6);
 
 end
 

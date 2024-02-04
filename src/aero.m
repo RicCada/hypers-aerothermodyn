@@ -1,4 +1,4 @@
-function [F, M, CpMat] = aero(vehicleData,fltcon)
+function [F, M, CpMat, L, D] = aero(vehicleData,fltcon)
 %   [F, M, CpMat] = aero(vehicleData,fltcon)
 %   computes the aerodynamic forces in hypersonic regime
 %
@@ -46,7 +46,9 @@ nAlt = length(altVec);
 gamma = fltcon.gamma; 
 
 % output data
-F = zeros(3, nAlp, nMach, nAlt); 
+F = zeros(3, nAlp, nMach, nAlt);
+L = zeros(1, nAlp, nMach, nAlt);
+D = zeros(1, nAlp, nMach, nAlt);
 M = zeros(3, nAlp, nMach, nAlt); 
 CpMat = zeros(nPanel, nAlp, nMach); 
 
@@ -71,6 +73,8 @@ for iA = 1:nAlp                 % loop on angle of attack
         F(:, iA, iM, :) = 0.5 .* rho .* v.^2 .* SRef .* CF;
         M(:, iA, iM, :) = 0.5 .* rho .* v.^2 .* SRef .* lRef .* CM; 
         CpMat(:, iA, iM) = cpIt; 
+        L(1, iA, iM, :) = -F(1, iA, iM, :)*sin(alpha) + F(3, iA, iM, :)*cos(alpha);
+        D(1, iA, iM, :) = -F(1, iA, iM, :)*cos(alpha) + F(3, iA, iM, :)*sin(alpha);
     end
 end
 
