@@ -1,14 +1,30 @@
 function indexVis = visibilityMod(vehicleData, dir)
+%   indexVis = visibilityMod(vehicleData, dir): function to exclude the panels shaded by other panels in the flow direction
+%   INPUT: 
+%       vehicleData,    struct: contains informations about the vehicle
+%               - center,    double[n, 3]: center cordinate of each panel
+%               - area,      double[n, 1]: area of each panel
+%               - normal,    double[n, 3]: normal unit vector to each panel
+%               - areaTotal, double[1, 1]: total external area of the model
+%               - nPanel,    double[1, 1]: number of panels (nPanel == n)
+%               - vertex,    double[n, 3, 3]: vertex of each panel, each
+%                                             vertex has coordinates [i, j, :]
+%               - indOrd,    double[n, 1]: ordered indexes in x-coordinate
+%                                          descending order
+%               - SRef,      double[1, 1]: reference surface
+%               - LRef,      double[1, 1]: reference length
+%               - CG,        double[1, 3]: CG coordinates
+%       dir,      double[3, 1]: flow direction in body reference frame
+%   OUTPUT: 
+%       indexVis,  logic[1, n]: true if the panel is visible, false otherwise
     
+
     nPanel = vehicleData.nPanel; 
-    
-    id = 1; 
-    idSorted = vehicleData.indOrd; 
-    
+
 
     % remove panels oriented in the wrong direction
     indexVis = ((vehicleData.normal * dir) < 0)'; 
-    
+
     % update the idSorted array to contain also the non sorted order
     idPanels = 1:nPanel; 
     idPanels = idPanels(indexVis); 
@@ -16,22 +32,32 @@ function indexVis = visibilityMod(vehicleData, dir)
     % compute the number of visible panels to be processed
     nPanelVis = length(idPanels); 
 
+    %%% --------------- DEBUG ONLY ---------------
+    % for k = 1:nPanelVis
+    %   i = idPanels(k); 
+    %   plot3(vehicleData.center(i, 1), vehicleData.center(i, 2), vehicleData.center(i, 3), 'MarkerSize', 20, 'Color', 'k', 'Marker', '.')
+    % end
+    %%% -----------------------------------------
+
     % scan visible panels
     for idRed = 1:nPanelVis
         
-        ids = idSorted(idPanels(idRed));                           % index in the sorted order
-        if indexVis(ids)
+        idp0 = idPanels(idRed);                           % index of the reference panel (the source of the "line")
+        if indexVis(idp0)
             % consider the beginning of the line as the center of the panel
-            l0 = vehicleData.center(ids, :)';   
-            plot3(l0(1), l0(2), l0(3), 'MarkerSize', 20, 'Color', 'y', 'Marker', '.')
-            
-            indexLine = [];                                  % pre initialize vector to store the elements along the same line
-            for i = 1:nPanelVis
-                id = idPanels(i);                       % index in the non sorted order
-                if (id ~= ids) && (indexVis(id))             % check each panel except for the source one and the ones already non visible
+            l0 = vehicleData.center(idp0, :)';   
 
-                    % for each of the other panels check if they are hit by the
-                    % line
+            %%% --------------- DEBUG ONLY ---------------
+            % plot3(l0(1), l0(2), l0(3), 'MarkerSize', 20, 'Color', 'y', 'Marker', '.')
+            %%% ------------------------------------------
+
+            indexLine = [];                                  % pre initialize vector to store the elements along the same line
+            distLine = []; 
+            for i = 1:nPanelVis
+                id = idPanels(i);                               % index of the considered panel 
+                if (id ~= idp0) && (indexVis(id))             % check each panel except for the source one and the ones already non visible
+
+                    % for each of the other panels check if they are hit by the line
                     p0 = vehicleData.center(id, :)';  
                     normal = vehicleData.normal(id, :)'; 
         
@@ -65,43 +91,49 @@ function indexVis = visibilityMod(vehicleData, dir)
             
                         if innerFlag
                           indexLine = [indexLine, id]; 
+                          distLine = [distLine, dist]; 
+                          %%% --------------- DEBUG ONLY ---------------
+                          % plot3(p0(1), p0(2), p0(3), 'MarkerSize', 20, 'Color', 'b', 'Marker', '.')
+                          %%% -----------------------------------------
                         end
                     end
                 end
     
             end
             % finisced loop on all the panels to get the ones in the same line
-            indexLine = [indexLine, ids];                    % store also the initial point
-            
+            indexLine = [indexLine, idp0];                    % store also the initial point
+            distLine = [distLine, 0]; 
+
             % find the first element along the line of sight (greatest x-coordinate)
-            idFirst = 0;                                     % index of the first element of the line
-            xMax = realmin;                                  % maximum x cooridinate
-            for j = indexLine
-                xCenter = vehicleData.center(j, 1); 
-                if xCenter > xMax
-                    xMax = xCenter; 
-                    idFirst = j; 
+            
+            [~, iDMin] = min(distLine); 
+            for j = 1:length(indexLine)
+                if j ~= iDMin
+                    indexVis(indexLine(j)) = false;
                 end
             end
 
-            % set false the visibility of all the non-first elements
-            for j = indexLine
-                if j ~= idFirst
-                    indexVis(j) = false; 
-%                     plot3(vehicleData.center(j, 1), vehicleData.center(j, 2), vehicleData.center(j, 3), 'MarkerSize', 20, 'Color', 'r', 'Marker', '.')                
-%                     drawnow
-                end
-            end
+%             % set false the visibility of all the non-first elements
+%             for j = indexLine
+%                 if j ~= idFirst
+%                     indexVis(indexLine(iDMin)) = true; 
+%                     %%% --------------- DEBUG ONLY ---------------
+%                     % plot3(vehicleData.center(j, 1), vehicleData.center(j, 2), vehicleData.center(j, 3), 'MarkerSize', 20, 'Color', 'r', 'Marker', '.')                
+%                     %%% ------------------------------------------
+%                 end
+%             end
         end
         clc; 
         fprintf('%d / %d, [%d visible]\n', idRed, nPanel, sum(indexVis)); 
     end
         
-    for i = 1:vehicleData.nPanel
-        if indexVis(i)
-            plot3(vehicleData.center(i, 1), vehicleData.center(i, 2), vehicleData.center(i, 3), 'MarkerSize', 20, 'Color', 'y', 'Marker', '.')
-        end
-    end
+    %%% --------------- DEBUG ONLY ---------------
+    % for i = 1:vehicleData.nPanel
+    %     if indexVis(i)
+    %         plot3(vehicleData.center(i, 1), vehicleData.center(i, 2), vehicleData.center(i, 3), 'MarkerSize', 20, 'Color', 'y', 'Marker', '.')
+    %     end
+    % end
+    %%% -----------------------------------------
 
 end
 
